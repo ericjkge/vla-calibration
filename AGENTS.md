@@ -48,12 +48,14 @@ first tab): https://docs.google.com/document/d/1x8Kt_hxKpZRo6hrYKqQAChF64CAdLnRY
 
 ## Repo layout / tooling
 
-- **uv** for envs. `pyproject.toml` + `uv.lock` (lock not generated yet).
-  - root = model env, Python 3.11, package `vlacal` (src layout: `src/vlacal/`)
+- **uv** for envs. Root and simulator lockfiles are committed.
+  - root = lightweight dev env, Python 3.11+, package `vlacal` (`src/vlacal/`)
+  - `.venv-model` = Python 3.11 runtime using pinned OpenPI's lockfile
   - `sim/` = sim env, Python 3.8, its own `pyproject.toml`, not a package
 - `src/vlacal/policy` π0.5 loading, hooks, server · `quant` fake-quant primitives + Quantizer API
   + methods · `calib` clean/OOD/on-policy calib sets · `eval` JSONL records, aggregation
-- `third_party/` → git submodules (openpi, LIBERO-Plus), not added yet
+- `third_party/openpi` is pinned; its nested original LIBERO is the ID simulator.
+  LIBERO-Plus is not added yet.
 - `configs/` → experiment configs (quantizer × calib source × eval split)
 - `scripts/` → entrypoints + `setup_model_env.sh` (openpi PyTorch needs extra setup steps,
   something like patching installed transformers + converting JAX ckpt; check openpi README)
@@ -89,7 +91,7 @@ first tab): https://docs.google.com/document/d/1x8Kt_hxKpZRo6hrYKqQAChF64CAdLnRY
 - LIBERO-Plus repo link for the submodule (make sure it's the right one).
 - LIBERO-Plus calib/test split: has to be defined by us. Leaning toward holding out whole
   perturbation types to avoid leakage, report seen-type vs unseen-type. Decide later.
-- Compute provider details (RunPod?), decide later.
+- Cannon allocation/storage choices for large experiment runs beyond the smoke test.
 - Exact set of layers kept at FP.
 
 ## Background notes (from the doc)

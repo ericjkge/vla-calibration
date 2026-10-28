@@ -10,6 +10,7 @@ export UV_CACHE_DIR="${UV_CACHE_DIR:-$VLACAL_DATA_DIR/cache/uv}"
 # Patching hardlinked transformers files would also modify uv's shared cache.
 export UV_LINK_MODE=copy
 export GIT_LFS_SKIP_SMUDGE=1
+export PYTHONUNBUFFERED=1
 export JAX_PLATFORMS=cpu
 export XLA_PYTHON_CLIENT_PREALLOCATE=false
 export LIBERO_CONFIG_PATH="$VLACAL_DATA_DIR/libero-config"
