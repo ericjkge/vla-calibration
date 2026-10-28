@@ -38,7 +38,7 @@ def main():
     parser.add_argument("--task-id", type=int, default=0)
     parser.add_argument("--initial-state-id", type=int, default=0)
     parser.add_argument("--seed", type=int, default=7)
-    parser.add_argument("--startup-timeout", type=int, default=600)
+    parser.add_argument("--startup-timeout", type=int, default=1200)
     parser.add_argument("--episode-timeout", type=int, default=900)
     parser.add_argument("--require-success", action="store_true")
     args = parser.parse_args()
