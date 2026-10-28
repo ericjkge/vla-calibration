@@ -5,6 +5,9 @@ without quantization. Full precision here means OpenPI's standard BF16/FP32
 inference, not all-FP32. A single successful episode does not validate the
 published 96.85% benchmark average.
 
+The first successful Cannon episode and its exact provenance are recorded in
+[cannon-validation.md](cannon-validation.md).
+
 ## Cannon
 
 Use the FASRC VPN and your usual web-portal shell, or authenticate from a terminal:

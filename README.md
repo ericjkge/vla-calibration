@@ -50,6 +50,10 @@ original LIBERO benchmark pinned by OpenPI. It runs exactly one task and initial
 state, and saves an MP4, per-episode JSONL, server/client logs, and run provenance.
 This is an integration smoke test, not a reproduction of the full benchmark score.
 
+Validated on Cannon on 2026-10-28: `libero_spatial` task 0, initial state 0,
+seed 7 succeeded in 78 action steps with 16 policy calls. See the
+[recorded environment and run details](docs/cannon-validation.md).
+
 Three isolated environments avoid the upstream dependency conflicts:
 
 - `.venv/`: lightweight development and tests (Mac or Linux).
