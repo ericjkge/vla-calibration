@@ -14,6 +14,9 @@ export PYTHONUNBUFFERED=1
 export JAX_PLATFORMS=cpu
 export XLA_PYTHON_CLIENT_PREALLOCATE=false
 export LIBERO_CONFIG_PATH="$VLACAL_DATA_DIR/libero-config"
+# LIBERO's pinned outer directory is a namespace package. Its legacy setup.py
+# uses find_packages(), leaving modern editable installs with an empty mapping.
+export PYTHONPATH="$VLACAL_ROOT/third_party/openpi/third_party/libero${PYTHONPATH:+:$PYTHONPATH}"
 export MUJOCO_GL="${MUJOCO_GL:-egl}"
 export PYOPENGL_PLATFORM="${PYOPENGL_PLATFORM:-$MUJOCO_GL}"
 MODEL_PYTHON="$VLACAL_ROOT/.venv-model/bin/python"
