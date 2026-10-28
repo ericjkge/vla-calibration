@@ -1,8 +1,8 @@
 """Small, dependency-free checkpoint checks shared by setup and serving."""
 
 import json
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 
 def validate_checkpoint(directory: Path) -> None:

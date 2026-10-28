@@ -1,23 +1,25 @@
 """Own both subprocesses, bound readiness/runtime, and retain logs on failure."""
 
 import argparse
-from datetime import datetime, timezone
 import json
 import os
-from pathlib import Path
 import socket
 import subprocess
 import sys
 import time
 import urllib.error
 import urllib.request
+from datetime import UTC, datetime
+from pathlib import Path
 
 
 def wait_for_server(process, port, timeout):
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         if process.poll() is not None:
-            raise RuntimeError(f"Policy server exited with code {process.returncode}; see server.log")
+            raise RuntimeError(
+                f"Policy server exited with code {process.returncode}; see server.log"
+            )
         try:
             with urllib.request.urlopen(f"http://127.0.0.1:{port}/healthz", timeout=2) as response:
                 if response.status == 200:
@@ -47,32 +49,60 @@ def main():
         sock.bind(("127.0.0.1", 0))
         port = sock.getsockname()[1]
     server_command = [
-        sys.executable, "-m", "vlacal.policy.serve", "--checkpoint", str(args.checkpoint),
-        "--port", str(port), "--seed", str(args.seed),
+        sys.executable,
+        "-m",
+        "vlacal.policy.serve",
+        "--checkpoint",
+        str(args.checkpoint),
+        "--port",
+        str(port),
+        "--seed",
+        str(args.seed),
     ]
     client_command = [
-        str(root / "sim/.venv/bin/python"), str(root / "sim/smoke_episode.py"),
-        "--port", str(port), "--output-dir", str(output), "--suite", args.suite,
-        "--task-id", str(args.task_id), "--initial-state-id", str(args.initial_state_id),
-        "--seed", str(args.seed),
+        str(root / "sim/.venv/bin/python"),
+        str(root / "sim/smoke_episode.py"),
+        "--port",
+        str(port),
+        "--output-dir",
+        str(output),
+        "--suite",
+        args.suite,
+        "--task-id",
+        str(args.task_id),
+        "--initial-state-id",
+        str(args.initial_state_id),
+        "--seed",
+        str(args.seed),
     ]
     if args.require_success:
         client_command.append("--require-success")
     manifest = {
-        "started_at": datetime.now(timezone.utc).isoformat(),
-        "git_commit": subprocess.check_output(["git", "-C", str(root), "rev-parse", "HEAD"], text=True).strip(),
+        "started_at": datetime.now(UTC).isoformat(),
+        "git_commit": subprocess.check_output(
+            ["git", "-C", str(root), "rev-parse", "HEAD"], text=True
+        ).strip(),
         "slurm_job_id": os.environ.get("SLURM_JOB_ID"),
-        "server_command": server_command, "client_command": client_command,
+        "server_command": server_command,
+        "client_command": client_command,
         "status": "error",
     }
     server = None
     exit_code = 1
     try:
-        with (output / "server.log").open("w") as server_log, (output / "client.log").open("w") as client_log:
+        with (
+            (output / "server.log").open("w") as server_log,
+            (output / "client.log").open("w") as client_log,
+        ):
             server = subprocess.Popen(server_command, stdout=server_log, stderr=subprocess.STDOUT)
             wait_for_server(server, port, args.startup_timeout)
-            result = subprocess.run(client_command, stdout=client_log, stderr=subprocess.STDOUT,
-                                    timeout=args.episode_timeout, check=False)
+            result = subprocess.run(
+                client_command,
+                stdout=client_log,
+                stderr=subprocess.STDOUT,
+                timeout=args.episode_timeout,
+                check=False,
+            )
             exit_code = result.returncode
             manifest["status"] = "completed" if exit_code in (0, 2) else "error"
             manifest["client_exit_code"] = exit_code

@@ -5,8 +5,8 @@ import dataclasses
 import json
 import logging
 import os
-from pathlib import Path
 import random
+from pathlib import Path
 
 from vlacal.policy.checkpoint import validate_checkpoint
 
@@ -24,10 +24,10 @@ def main() -> None:
         parser.error("--denoising-steps must be positive")
     os.environ["JAX_PLATFORMS"] = "cpu"
     import numpy as np
+    import torch
     from openpi.policies import policy_config
     from openpi.serving.websocket_policy_server import WebsocketPolicyServer
     from openpi.training import config
-    import torch
 
     if not torch.cuda.is_available():
         raise RuntimeError("A CUDA GPU is required. Run inside a GPU compute allocation.")
@@ -42,25 +42,34 @@ def main() -> None:
         model=dataclasses.replace(train_config.model, pytorch_compile_mode=None),
     )
     policy = policy_config.create_trained_policy(
-        train_config, args.checkpoint, pytorch_device="cuda",
+        train_config,
+        args.checkpoint,
+        pytorch_device="cuda",
         sample_kwargs={"num_steps": args.denoising_steps},
     )
     if not policy._is_pytorch_model:
         raise RuntimeError("Refusing to serve a JAX policy in the PyTorch smoke test")
     metadata = {
-        "model": "pi05_libero", "backend": "pytorch", "quantization": None,
-        "precision": "OpenPI BF16/FP32", "seed": args.seed,
+        "model": "pi05_libero",
+        "backend": "pytorch",
+        "quantization": None,
+        "precision": "OpenPI BF16/FP32",
+        "seed": args.seed,
         "denoising_steps": args.denoising_steps,
-        "action_horizon": train_config.model.action_horizon, "action_dim": 7,
+        "action_horizon": train_config.model.action_horizon,
+        "action_dim": 7,
         "checkpoint": str(args.checkpoint.resolve()),
-        "gpu": torch.cuda.get_device_name(0), "torch_version": torch.__version__,
+        "gpu": torch.cuda.get_device_name(0),
+        "torch_version": torch.__version__,
     }
     manifest = args.checkpoint / "vlacal_checkpoint.json"
     if manifest.is_file():
         metadata["checkpoint_provenance"] = json.loads(manifest.read_text())
     logging.info("Policy ready: %s", json.dumps(metadata))
     with torch.inference_mode():
-        WebsocketPolicyServer(policy, host=args.host, port=args.port, metadata=metadata).serve_forever()
+        WebsocketPolicyServer(
+            policy, host=args.host, port=args.port, metadata=metadata
+        ).serve_forever()
 
 
 if __name__ == "__main__":

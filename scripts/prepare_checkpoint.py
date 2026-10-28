@@ -1,14 +1,14 @@
 """Download the official LIBERO checkpoint and convert it with pinned OpenPI."""
 
 import argparse
-from datetime import datetime, timezone
 import json
 import os
-from pathlib import Path
 import runpy
 import shutil
 import subprocess
 import tempfile
+from datetime import UTC, datetime
+from pathlib import Path
 
 from vlacal.policy.checkpoint import copy_normalization_assets, validate_checkpoint
 
@@ -37,8 +37,10 @@ def main() -> None:
     with tempfile.TemporaryDirectory(prefix="pi05-conversion-", dir=output.parent) as temporary:
         converted = Path(temporary)
         converter["main"](
-            checkpoint_dir=str(source), config_name="pi05_libero",
-            output_path=str(converted), precision="bfloat16",
+            checkpoint_dir=str(source),
+            config_name="pi05_libero",
+            output_path=str(converted),
+            precision="bfloat16",
         )
         copy_normalization_assets(source, converted)
         validate_checkpoint(converted)
@@ -50,7 +52,7 @@ def main() -> None:
             "openpi_commit": subprocess.check_output(
                 ["git", "-C", str(upstream), "rev-parse", "HEAD"], text=True
             ).strip(),
-            "converted_at": datetime.now(timezone.utc).isoformat(),
+            "converted_at": datetime.now(UTC).isoformat(),
         }
         (converted / "vlacal_checkpoint.json").write_text(json.dumps(manifest, indent=2))
         # Only expose the final path after weights and normalization validate.

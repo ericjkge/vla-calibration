@@ -21,5 +21,8 @@ line-length = 100
 target-version = "py311"
 extend-exclude = ["third_party"]
 
+[tool.ruff.per-file-target-version]
+"sim/**/*.py" = "py38"
+
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

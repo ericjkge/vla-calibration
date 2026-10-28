@@ -1,7 +1,7 @@
 """Single-episode control loop; dependency-light so preprocessing can be tested locally."""
 
-from collections import deque
 import math
+from collections import deque
 
 import numpy as np
 
@@ -25,16 +25,20 @@ def make_observation(obs, prompt, resize):
     def image(key):
         return resize(np.ascontiguousarray(obs[key][::-1, ::-1]))
 
-    state = np.concatenate((
-        obs["robot0_eef_pos"], quaternion_to_axis_angle(obs["robot0_eef_quat"]),
-        obs["robot0_gripper_qpos"],
-    ))
+    state = np.concatenate(
+        (
+            obs["robot0_eef_pos"],
+            quaternion_to_axis_angle(obs["robot0_eef_quat"]),
+            obs["robot0_gripper_qpos"],
+        )
+    )
     if state.shape != (8,) or not np.isfinite(state).all():
         raise ValueError("LIBERO observation must contain a finite 8D robot state")
     return {
         "observation/image": image("agentview_image"),
         "observation/wrist_image": image("robot0_eye_in_hand_image"),
-        "observation/state": state, "prompt": str(prompt),
+        "observation/state": state,
+        "prompt": str(prompt),
     }
 
 
@@ -47,8 +51,18 @@ def validate_actions(actions, replan_steps):
     return actions
 
 
-def run_episode(env, client, initial_state, prompt, resize, *, max_steps=220,
-                replan_steps=5, settle_steps=10, on_frame=None):
+def run_episode(
+    env,
+    client,
+    initial_state,
+    prompt,
+    resize,
+    *,
+    max_steps=220,
+    replan_steps=5,
+    settle_steps=10,
+    on_frame=None,
+):
     if max_steps < 1 or replan_steps < 1 or settle_steps < 0:
         raise ValueError("Invalid episode length, replanning interval, or settling steps")
     env.reset()
@@ -59,7 +73,7 @@ def run_episode(env, client, initial_state, prompt, resize, *, max_steps=220,
     plan = deque()
     calls = 0
     success = False
-    for step in range(max_steps):
+    for step in range(max_steps):  # noqa: B007 -- used to report executed steps after the loop
         observation = make_observation(obs, prompt, resize)
         if on_frame is not None:
             on_frame(observation["observation/image"])
@@ -71,5 +85,9 @@ def run_episode(env, client, initial_state, prompt, resize, *, max_steps=220,
         if done:
             success = True
             break
-    return {"success": success, "steps": step + 1, "policy_calls": calls,
-            "settle_steps": settle_steps}
+    return {
+        "success": success,
+        "steps": step + 1,
+        "policy_calls": calls,
+        "settle_steps": settle_steps,
+    }

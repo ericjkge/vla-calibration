@@ -3,8 +3,8 @@
 import importlib.metadata
 import importlib.util
 import os
-from pathlib import Path
 import tempfile
+from pathlib import Path
 
 
 def patch_tree(source: Path, destination: Path) -> int:
