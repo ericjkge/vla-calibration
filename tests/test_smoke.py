@@ -3,8 +3,8 @@
 import importlib.util
 import json
 import os
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -39,7 +39,9 @@ def test_preprocessing_rotates_both_cameras_and_preserves_input():
     obs = observation()
     result = rollout.make_observation(obs, "pick up", lambda x: x)
     np.testing.assert_array_equal(result["observation/image"], obs["agentview_image"][::-1, ::-1])
-    np.testing.assert_array_equal(result["observation/wrist_image"], obs["robot0_eye_in_hand_image"][::-1, ::-1])
+    np.testing.assert_array_equal(
+        result["observation/wrist_image"], obs["robot0_eye_in_hand_image"][::-1, ::-1]
+    )
     np.testing.assert_allclose(result["observation/state"], [1, 2, 3, 0, 0, 0, 0.1, 0.2])
     assert obs["robot0_eef_quat"][3] == 1.0000001
 
@@ -90,7 +92,9 @@ def test_horizon_excludes_settling_steps():
     assert len(env.actions) == 13
 
 
-@pytest.mark.parametrize("actions", [np.zeros((4, 7)), np.zeros((10, 32)), np.full((10, 7), np.nan)])
+@pytest.mark.parametrize(
+    "actions", [np.zeros((4, 7)), np.zeros((10, 32)), np.full((10, 7), np.nan)]
+)
 def test_bad_actions_fail_instead_of_becoming_task_failures(actions):
     with pytest.raises(ValueError):
         rollout.validate_actions(actions, 5)
@@ -100,6 +104,7 @@ def test_runtime_error_propagates():
     class BrokenClient(Client):
         def infer(self, obs):
             raise RuntimeError("inference failed")
+
     with pytest.raises(RuntimeError, match="inference failed"):
         rollout.run_episode(Environment(), BrokenClient(), "initial", "test", lambda x: x)
 
@@ -132,7 +137,9 @@ def test_checkpoint_requires_weights_and_copies_assets_from_checkpoint_root(tmp_
         validate_checkpoint(target)
     copy_normalization_assets(source, target)
     validate_checkpoint(target)
-    assert (target / "assets/physical-intelligence/libero/norm_stats.json").read_bytes() == asset.read_bytes()
+    assert (
+        target / "assets/physical-intelligence/libero/norm_stats.json"
+    ).read_bytes() == asset.read_bytes()
 
 
 def test_dead_server_fails_readiness_immediately():
@@ -141,5 +148,6 @@ def test_dead_server_fails_readiness_immediately():
 
         def poll(self):
             return self.returncode
+
     with pytest.raises(RuntimeError, match="code 7"):
         launcher.wait_for_server(DeadProcess(), 1, 30)

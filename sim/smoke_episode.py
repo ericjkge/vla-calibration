@@ -1,13 +1,13 @@
 """Run exactly one LIBERO task/initial-state pair and write JSONL plus an MP4."""
 
 import argparse
-from datetime import datetime, timezone
 import json
 import os
-from pathlib import Path
 import random
 import time
 import traceback
+from datetime import datetime, timezone
+from pathlib import Path
 
 from rollout import MAX_STEPS, run_episode
 
@@ -26,10 +26,15 @@ def main():
     args = parser.parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     record = {
-        "started_at": datetime.now(timezone.utc).isoformat(), "suite": args.suite,
-        "task_id": args.task_id, "initial_state_id": args.initial_state_id,
-        "seed": args.seed, "replan_steps": args.replan_steps,
-        "max_steps": MAX_STEPS[args.suite], "status": "error", "success": None,
+        "started_at": datetime.now(timezone.utc).isoformat(),
+        "suite": args.suite,
+        "task_id": args.task_id,
+        "initial_state_id": args.initial_state_id,
+        "seed": args.seed,
+        "replan_steps": args.replan_steps,
+        "max_steps": MAX_STEPS[args.suite],
+        "status": "error",
+        "success": None,
         "renderer": os.environ.get("MUJOCO_GL"),
     }
     env = None
@@ -38,9 +43,9 @@ def main():
     exit_code = 1
     try:
         import imageio.v2 as imageio
+        import numpy as np
         from libero.libero import benchmark, get_libero_path
         from libero.libero.envs import OffScreenRenderEnv
-        import numpy as np
         from openpi_client import image_tools
         from openpi_client.websocket_client_policy import WebsocketClientPolicy
 
@@ -48,8 +53,12 @@ def main():
         np.random.seed(args.seed)
         client = WebsocketClientPolicy(args.host, args.port)
         metadata = client.get_server_metadata()
-        if (metadata.get("model") != "pi05_libero" or metadata.get("backend") != "pytorch"
-                or "quantization" not in metadata or metadata["quantization"] is not None):
+        if (
+            metadata.get("model") != "pi05_libero"
+            or metadata.get("backend") != "pytorch"
+            or "quantization" not in metadata
+            or metadata["quantization"] is not None
+        ):
             raise ValueError("Expected the unquantized vlacal pi05_libero PyTorch server")
         record["policy"] = metadata
         suite = benchmark.get_benchmark_dict()[args.suite]()
@@ -70,8 +79,13 @@ def main():
             return image_tools.convert_to_uint8(image_tools.resize_with_pad(image, 224, 224))
 
         result = run_episode(
-            env, client, initial_states[args.initial_state_id], task.language, resize,
-            max_steps=MAX_STEPS[args.suite], replan_steps=args.replan_steps,
+            env,
+            client,
+            initial_states[args.initial_state_id],
+            task.language,
+            resize,
+            max_steps=MAX_STEPS[args.suite],
+            replan_steps=args.replan_steps,
             on_frame=writer.append_data,
         )
         writer.close()
