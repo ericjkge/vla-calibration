@@ -15,4 +15,4 @@ uv sync --project sim --python 3.8 --frozen
 uv pip install --python "$SIM_PYTHON" --no-deps --no-build-isolation \
     -e "$VLACAL_ROOT/third_party/openpi/third_party/libero"
 "$SIM_PYTHON" "$VLACAL_ROOT/scripts/configure_libero.py"
-"$SIM_PYTHON" -c 'import mujoco, robosuite; from libero.libero import benchmark; print("MuJoCo", mujoco.__version__, "suites", list(benchmark.get_benchmark_dict()))'
+"$SIM_PYTHON" -c 'import mujoco, robosuite; from libero.libero import benchmark; from libero.libero.envs import OffScreenRenderEnv; print("MuJoCo", mujoco.__version__, "suites", list(benchmark.get_benchmark_dict()), "environment", OffScreenRenderEnv.__name__)'
