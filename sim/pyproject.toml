@@ -1,0 +1,9 @@
+# Separate environment for the LIBERO-Plus simulator and rollout client.
+# LIBERO pins old robosuite/MuJoCo versions that conflict with the model env,
+# so the sim talks to the policy server over a websocket via openpi-client.
+
+[project]
+name = "vlacal-sim"
+version = "0.1.0"
+requires-python = ">=3.8,<3.9"
+dependencies = []
