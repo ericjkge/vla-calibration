@@ -1,4 +1,4 @@
-# Separate environment for the LIBERO-Plus simulator and rollout client.
+# Separate environment for the original LIBERO simulator and rollout client.
 # LIBERO pins old robosuite/MuJoCo versions that conflict with the model env,
 # so the sim talks to the policy server over a websocket via openpi-client.
 

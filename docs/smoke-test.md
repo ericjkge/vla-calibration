@@ -102,6 +102,8 @@ Never count a timeout or import error as a valid benchmark failure.
   converter's parent-directory asset lookup. Original normalization is preserved.
 - The simulator uses CPU Torch 1.11 for reading initial states; PyTorch CUDA 2.7.1
   lives only in the model environment. MuJoCo 2.3.7 / robosuite 1.4.1 are pinned.
+- The launch scripts add the pinned LIBERO source to `PYTHONPATH`: its legacy
+  package discovery produces an empty mapping with modern editable installs.
 - JAX is CPU-only at runtime; the policy requires a PyTorch checkpoint and CUDA.
   Eager inference avoids compilation startup overhead for this small smoke test.
 - EGL needs NVIDIA rendering libraries on the compute node. If EGL initialization

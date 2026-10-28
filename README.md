@@ -22,9 +22,9 @@ with integer kernels, since we measure task success, not latency.
 ## Layout
 
 ```
-pyproject.toml      model env (Python 3.11): vlacal, openpi, torch
-sim/                sim env (Python 3.8): LIBERO-Plus + openpi-client rollout client
-third_party/        git submodules: openpi, LIBERO-Plus
+pyproject.toml      lightweight development env (Python 3.11+): vlacal and tests
+sim/                sim env (Python 3.8): original LIBERO + openpi-client
+third_party/        pinned OpenPI and its nested original LIBERO submodule
 scripts/            setup and experiment entrypoints
 src/vlacal/
   policy/           π0.5 loading, activation hooks, policy server
@@ -36,7 +36,7 @@ tests/
 ```
 
 The policy and the simulator run as separate processes in separate environments: a websocket
-policy server in the model env, and a LIBERO-Plus rollout client in the sim env (the same setup
+policy server in the model env, and a LIBERO rollout client in the sim env (the same setup
 openpi uses for LIBERO).
 
 Checkpoints, calibration sets, and results live under `$VLACAL_DATA_DIR` (default `./data`),
