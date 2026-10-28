@@ -37,7 +37,7 @@ squeue -u "$USER"
 
 The setup job requests 96 GiB CPU RAM because checkpoint conversion temporarily
 holds multiple copies of weights. Evaluation requests one GPU, 8 CPUs, 64 GiB
-host RAM, and 30 minutes. Adjust partition/account flags to your allocation.
+host RAM, and 45 minutes. Adjust partition/account flags to your allocation.
 Cannon's `gpu_test` uses A100 MIG slices; use a full GPU for the initial EGL run.
 Both policy server and sim client run on the same compute node over loopback.
 The server binds only to `127.0.0.1`; no public port or SSH tunnel is needed.
@@ -83,7 +83,9 @@ Each run creates `$VLACAL_DATA_DIR/results/smoke-<UTC timestamp>-<pid>/`:
 Exit 0 means a completed episode (with `--require-success`, also task success).
 Exit 2 means a completed episode that did not succeed when success was required.
 Other failures are errors, not recorded as normal task failures. Server startup
-and episode execution have bounded timeouts; the owned server is stopped on exit.
+and episode execution have bounded timeouts (20 and 15 minutes, respectively);
+the owned server is stopped on exit. The initial policy-import check took about
+3.5 minutes on Cannon's shared home filesystem, so the first load needs headroom.
 Never count a timeout or import error as a valid benchmark failure.
 
 ## Compatibility decisions
