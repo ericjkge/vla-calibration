@@ -72,9 +72,17 @@ first tab): https://docs.google.com/document/d/1x8Kt_hxKpZRo6hrYKqQAChF64CAdLnRY
 
 ## Status (2026-10-28)
 
-- Skeleton only. No deps installed, no submodules, no code.
-- Next: install envs + submodules → FP π0.5 smoke test (serve + one LIBERO episode) →
-  fake-quant primitives + Quantizer API (+ RTN as sanity baseline) → SmoothQuant → GPTQ → QVLA.
+- First milestone implementation is in `docs/smoke-test.md`; check that guide and
+  recorded run artifacts for runtime validation status rather than assuming success.
+- OpenPI is pinned in `third_party/openpi`; original LIBERO is its nested submodule.
+  LIBERO-Plus is deferred until the original ID smoke test is established.
+- Root `.venv` is lightweight development; `.venv-model` uses OpenPI's frozen lock
+  (excluding unused rerun-sdk for Cannon glibc compatibility); `sim/.venv` uses its
+  own Python 3.8 lock. Setup and run scripts invoke explicit Python executables.
+- Cannon is the initial runtime. Setup/conversion are CPU jobs, inference is a full
+  A100 GPU job. Keep RepoDisco's conda environment independent.
+- Next after validating the FP episode: fake-quant primitives + Quantizer API
+  (+ RTN as sanity baseline) → SmoothQuant → GPTQ → QVLA.
 
 ## Open / TBD
 

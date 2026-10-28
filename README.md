@@ -42,21 +42,23 @@ openpi uses for LIBERO).
 Checkpoints, calibration sets, and results live under `$VLACAL_DATA_DIR` (default `./data`),
 outside git.
 
-## Setup
+## First milestone: unquantized PyTorch π0.5 on one LIBERO episode
 
-> Not yet tested. Dependencies and submodules have not been added.
+See [the Cannon and Linux setup guide](docs/smoke-test.md). The runner uses the
+official `pi05_libero` checkpoint, OpenPI's BF16/FP32 inference precision, and the
+original LIBERO benchmark pinned by OpenPI. It runs exactly one task and initial
+state, and saves an MP4, per-episode JSONL, server/client logs, and run provenance.
+This is an integration smoke test, not a reproduction of the full benchmark score.
 
-Requires [uv](https://docs.astral.sh/uv/).
+Three isolated environments avoid the upstream dependency conflicts:
 
-```bash
-git submodule update --init --recursive
+- `.venv/`: lightweight development and tests (Mac or Linux).
+- `.venv-model/`: Python 3.11, pinned OpenPI PyTorch runtime (Linux x86_64).
+- `sim/.venv/`: Python 3.8, pinned LIBERO simulator and websocket client (Linux x86_64).
 
-# Model env (repo root)
-uv sync
-
-# Sim env
-cd sim && uv sync
-```
+The first milestone uses original LIBERO through the OpenPI submodule. LIBERO-Plus
+and quantization methods are not implemented yet. Do not install LIBERO-Plus over
+the ID simulator environment when reproducing this baseline.
 
 ## Development
 
@@ -64,3 +66,7 @@ cd sim && uv sync
 uv run pytest
 uv run ruff check .
 ```
+
+The model environment uses OpenPI's committed `uv.lock`; the root and simulator
+environments have their own lockfiles. `uv run` at the root is for development;
+the launch scripts invoke the model and simulator Python executables explicitly.
