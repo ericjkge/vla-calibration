@@ -54,6 +54,8 @@ Run package installation and checkpoint conversion on a compute node, not a
 Cannon login node. In an interactive allocation:
 
 ```bash
+# On Cannon, provide CMake for the simulator's egl-probe extension.
+module load cmake/3.28.3-fasrc01
 bash scripts/setup_model_env.sh
 bash scripts/setup_sim_env.sh
 bash scripts/prepare_checkpoint.sh
