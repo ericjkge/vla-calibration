@@ -74,8 +74,10 @@ first tab): https://docs.google.com/document/d/1x8Kt_hxKpZRo6hrYKqQAChF64CAdLnRY
 
 ## Status (2026-10-28)
 
-- First milestone implementation is in `docs/smoke-test.md`; check that guide and
-  recorded run artifacts for runtime validation status rather than assuming success.
+- First milestone passed on Cannon: job `55962026`, unquantized PyTorch π0.5,
+  `libero_spatial` task 0 / initial state 0 / seed 7, success in 78 action steps.
+  Setup is in `docs/smoke-test.md`; provenance is in `docs/cannon-validation.md`.
+  This single episode does not establish the full benchmark success rate.
 - OpenPI is pinned in `third_party/openpi`; original LIBERO is its nested submodule.
   LIBERO-Plus is deferred until the original ID smoke test is established.
 - Root `.venv` is lightweight development; `.venv-model` uses OpenPI's frozen lock
